@@ -1,3 +1,4 @@
+// Nos conectamos al servidor
 var socket = io.connect('http://elladogeekde.ciges.net:8080', { 'forceNew': true });
 
 socket.on('messages', function(data)    {

@@ -2,7 +2,7 @@ name: inverse
 layout: true
 class: center, middle, inverse
 ---
-#Aplicaciones escalables con Node.js
+# Aplicaciones escalables con Node.js
 ![logo](./images/logo.png)
 
 
@@ -351,6 +351,7 @@ app.post("/inventario", function(req, res) {
 - Programamos el lado servidor (servidor de sockets) y la comunicación desde la aplicación
 - A un mismo servidor se conectan múltiples clientes
 - Tiene que haber soporte desde el navegador (ver [aquí](http://caniuse.com/#search=websockets))
+- Hay múltiples librerías, usaremos **Socket.IO**, wrapper que facilita su uso
 ]
 
 ---
@@ -359,46 +360,54 @@ app.post("/inventario", function(req, res) {
 ###  Servidor
 
 ```JavaScript
-var WebSocketServer = require("ws").Server;
-var wss = new WebSocketServer({ port: 9000 });
+...
+var express = require('express');
+var app = express(); 
+var server = require('http').Server(app);  
+var io = require('socket.io')(server); 
 
-wss.on("connection", function(ws) {  ws.send("Bienvenido al servidor de chat"); });
+...
+
+io.on('connection', function(socket) {
+    console.log('Alguien se ha conectado con Sockets');
+    socket.emit('messages', messages); 
+    socket.on('new-message', function(data) {
+        messages.push(data);
+        // Reenviamos el mensaje a todos los clientes
+        io.sockets.emit('messages', messages);
+    });
+});
 ``` 
-### Cliente
 
-```JavaScript
-var ws = new WebSocket("ws://localhost:9000");
-
-ws.onopen = function() {
-  setTitle("Connectado al servidor de chat");
-};
-
-ws.onclose = function() {  setTitle("DESCONECTADO"); };
-
-ws.onmessage = function(payload) {  printMessage(payload.data); };
-```
-
+.footnote[Ejercicio completo [aquí](./ejercicios/09_websockets/), obtenido de [este tutorial de Carlos Azaustre](https://carlosazaustre.es/blog/websockets-como-utilizar-socket-io-en-tu-aplicacion-web/)]
 ---
 ## Aplicaciones Cliente/Servidor con WebSockets *(2)*
 
-### Cliente *(continuación)*
+### Cliente
 
 ```JavaScript
-document.forms[0].onsubmit = function () {
-    var input = document.getElementById('message');
-    ws.send(input.value);
-    input.value = '';
-};
+// Nos conectamos al servidor
+var socket = io.connect('http://elladogeekde.ciges.net:8080', { 'forceNew': true });
+socket.on('messages', function(data)    {
+    console.log(data);
+    render(data);
+});
 
-function setTitle(title) {  document.querySelector('h1').innerHTML = title;  }
+// Modificación del HTML de la web
+function render(data) { ... };
 
-function printMessage(message) {
-    var p = document.createElement('p');
-    p.innerText = message;
-    document.querySelector('div.messages').appendChild(p);
+function addMesage(e) {
+    var payload = {
+        author: document.getElementById('username').value,
+        text: document.getElementById('texto').value,
+    }
+    socket.emit('new-message', payload);
+    return false;
 }
+
 ```
 
+.footnote[Ejercicio completo [aquí](./ejercicios/09_websockets/), obtenido de [este tutorial de Carlos Azaustre](https://carlosazaustre.es/blog/websockets-como-utilizar-socket-io-en-tu-aplicacion-web/)]
 ---
 .left-column[
   ## JADE
@@ -596,7 +605,6 @@ Para alojar nuestas aplicaciones Node.js necesitaremos:
   - [Vultr](https://www.vultr.com/pricing/)
   - [Amazon](https://aws.amazon.com/es/ec2/pricing/)
   - [Google Cloud](https://cloud.google.com/products/calculator/)
-  - [DomainsVM](https://www.domainsvm.com/): hosting económico de un amigo :-)
 
 - Y entre los hostings gratuítos podemos nombrar:
   - [RedHat OpenShift](https://www.openshift.com/pricing/index.html): hasta 3 aplicaciones gratuítas
@@ -611,7 +619,7 @@ Para alojar nuestas aplicaciones Node.js necesitaremos:
 Esta resumen de la tecnología Node.js ha sido posible gracias, entre otros, fundamentalmente a:
 - **[Alberto Basalo](http://www.albertobasalo.com/)**, profesor del curso *"Desarrollo Profesional de aplicaciones escalables con Node.js"*, impartido por [Vitae Consultores](http://www.vitaedigital.com/)
 - [Alex Banks](http://www.lynda.com/Alex-Banks/4865699-1.html), profesor del curso [*"Node.js Essential Training"* en Lynda.com](http://www.lynda.com/Node-js-tutorials/Node-js-Essential-Training/417077-2.html)
-- [Christopher Buecheler](http://cwbuecheler.com/web/tutorials/2013/node-express-mongo/), en cuyo blog se encuentran artículos excelentes
+- [Christopher Buecheler](http://cwbuecheler.com/web/tutorials/2013/node-express-mongo/) y [Carlos Azaustre](https://carlosazaustre.es), en cuyos blogs se encuentran artículos excelentes
 
 ![icono](./images/icon-question.png)
 
