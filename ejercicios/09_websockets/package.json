@@ -1,0 +1,20 @@
+{
+  "name": "09_websockets",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server/main.js"
+  },
+  "keywords": [],
+  "author": "Carlos Azaustre <cazaustre@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4",
+    "socket.io": "^1.4.5"
+  },
+  "devDependencies": {
+    "nodemon": "^1.9.0"
+  }
+}
