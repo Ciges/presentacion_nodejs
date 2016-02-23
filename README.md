@@ -8,7 +8,7 @@ class: center, middle, inverse
 
 *José M. Ciges - Febrero 2016*
 
-.footnote[<small>*Código disponible en la carpeta ["Ejercicios"](./ejercicios/)*</small>]]
+.footnote[Código disponible en la carpeta ["Ejercicios"](./ejercicios/) (zip [aquí](./ejercicios_nodejs.zip))]
 ---
 layout: true
 class: center, middle
